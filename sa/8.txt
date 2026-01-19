@@ -1,0 +1,147 @@
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Load the built-in Titanic dataset from Seaborn
+titanic = sns.load_dataset('titanic')
+
+
+
+# Print basic information about the dataset
+print("\nDataset Info:")
+print(f"Number of passengers: {len(titanic)}")
+print("\nFirst few rows of the dataset:")
+print(titanic.head())
+
+
+# 1. Histogram: Distribution of ticket fare
+#sns.histplot(titanic['fare'], bins=30, kde=True)
+
+sns.histplot(data=titanic, x='fare', bins=30, kde=True)
+plt.title('Distribution of Ticket Fare')
+plt.xlabel('Fare')
+plt.ylabel('Number of Passengers')
+plt.show()
+
+# 2. Countplot: Number of survivors vs. non-survivors
+sns.countplot(x='survived', data=titanic)
+plt.title('Survival Count (0 = No, 1 = Yes)')
+plt.xlabel('Survived')
+plt.ylabel('Number of Passengers')
+plt.show()
+
+# 3. Countplot: Survival by sex
+sns.countplot(x='sex', hue='survived', data=titanic)
+plt.title('Survival Count by Sex')
+plt.xlabel('Sex')
+plt.ylabel('Number of Passengers')
+plt.legend(title='Survived', labels=['No', 'Yes'])
+plt.show()
+
+# 4. Boxplot: Age distribution by survival
+sns.boxplot(x='survived', y='age', data=titanic)
+plt.title('Age Distribution by Survival')
+plt.xlabel('Survived')
+plt.ylabel('Age')
+plt.show()
+
+
+
+
+
+
+
+
+
+# Import required libraries
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the Titanic dataset from seaborn
+dataset = sns.load_dataset('titanic')
+
+# Remove missing values
+dataset = dataset.dropna()
+
+# Distribution plots
+sns.displot(data=dataset, x='fare', kind='hist', kde=True)
+plt.show()
+
+sns.displot(data=dataset, x='fare', kind='hist', kde=False, bins=10)
+plt.show()
+
+# Joint plots
+sns.jointplot(x='age', y='fare', data=dataset)
+plt.show()
+
+sns.jointplot(x='age', y='fare', data=dataset, kind='hex')
+plt.show()
+
+# Pair plots
+sns.pairplot(dataset)
+plt.show()
+
+sns.pairplot(dataset, hue='sex')
+plt.show()
+
+# Rug plot
+sns.rugplot(dataset['fare'])
+plt.show()
+
+# Bar plots
+sns.barplot(x='sex', y='age', data=dataset)
+plt.show()
+
+sns.barplot(x='sex', y='age', data=dataset, estimator=np.std)
+plt.show()
+
+# Count plot
+sns.countplot(x='sex', data=dataset)
+plt.show()
+
+# Box plots
+sns.boxplot(x='sex', y='age', data=dataset)
+plt.show()
+
+sns.boxplot(x='sex', y='age', data=dataset, hue="survived")
+plt.show()
+
+# Violin plots
+sns.violinplot(x='sex', y='age', data=dataset)
+plt.show()
+
+sns.violinplot(x='sex', y='age', data=dataset, hue='survived')
+plt.show()
+
+sns.violinplot(x='sex', y='age', data=dataset, hue='survived', split=True)
+plt.show()
+
+# Strip plots
+sns.stripplot(x='sex', y='age', data=dataset)
+plt.show()
+
+sns.stripplot(x='sex', y='age', data=dataset, jitter=True)
+plt.show()
+
+sns.stripplot(x='sex', y='age', data=dataset, jitter=True, hue='survived')
+plt.show()
+
+# Removing the invalid split parameter from stripplot
+sns.stripplot(x='sex', y='age', data=dataset, jitter=True, hue='survived', dodge=True)
+plt.show()
+
+# Swarm plots
+sns.swarmplot(x='sex', y='age', data=dataset)
+plt.show()
+
+sns.swarmplot(x='sex', y='age', data=dataset, hue='survived')
+plt.show()
+
+# Replacing split with dodge for proper point separation
+sns.swarmplot(x='sex', y='age', data=dataset, hue='survived', dodge=True)
+plt.show()
+
+# Combined Violin and Swarm plot
+sns.violinplot(x='sex', y='age', data=dataset)
+sns.swarmplot(x='sex', y='age', data=dataset, color='black')
+plt.show()

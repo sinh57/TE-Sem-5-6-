@@ -1,0 +1,109 @@
+import java.util.*;
+
+public class FCFS {
+    public static void main(String args[]) {
+        Scanner sc = new Scanner(System.in);
+        
+        System.out.println("Enter number of processes: ");
+        int n = sc.nextInt();
+        
+        int pid[] = new int[n]; // Process IDs
+        int ar[] = new int[n];   // Arrival Times
+        int bt[] = new int[n];   // Burst Times
+        int ct[] = new int[n];   // Completion Times
+        int ta[] = new int[n];   // Turnaround Times
+        int wt[] = new int[n];   // Waiting Times
+        int temp;
+        float avgwt = 0, avgta = 0; // Averages
+        
+        // Input process data
+        for (int i = 0; i < n; i++) {
+            System.out.println("Enter process " + (i + 1) + " arrival time: ");
+            ar[i] = sc.nextInt();
+            System.out.println("Enter process " + (i + 1) + " burst time: ");
+            bt[i] = sc.nextInt();
+            pid[i] = i + 1;
+        }
+        
+        // Sort processes based on Arrival Time using Bubble Sort
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n - (i + 1); j++) {
+                if (ar[j] > ar[j + 1]) {
+                    // Swap arrival times
+                    temp = ar[j];
+                    ar[j] = ar[j + 1];
+                    ar[j + 1] = temp;
+                    
+                    // Swap burst times
+                    temp = bt[j];
+                    bt[j] = bt[j + 1];
+                    bt[j + 1] = temp;
+                    
+                    // Swap process IDs
+                    temp = pid[j];
+                    pid[j] = pid[j + 1];
+                    pid[j + 1] = temp;
+                }
+            }
+        }
+        
+        // Calculating Completion, Turnaround, and Waiting Times
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                // First process: Completion time is its arrival time + burst time
+                ct[i] = ar[i] + bt[i];
+            } else {
+                // If next process arrives after previous process completion
+                if (ar[i] > ct[i - 1]) {
+                    ct[i] = ar[i] + bt[i]; // Process starts when it arrives
+                } else {
+                    ct[i] = ct[i - 1] + bt[i]; // Process starts when CPU is free
+                }
+            }
+            ta[i] = ct[i] - ar[i]; // Turnaround time = Completion time - Arrival time
+            wt[i] = ta[i] - bt[i]; // Waiting time = Turnaround time - Burst time
+            avgwt += wt[i];        // Summing up total waiting time
+            avgta += ta[i];        // Summing up total turnaround time
+        }
+        
+        // Output results
+        System.out.println("\npid\tarrival\tburst\tcomplete\tturnaround\twaiting");
+        for (int i = 0; i < n; i++) {
+            System.out.println(pid[i] + "\t" + ar[i] + "\t" + bt[i] + "\t" + ct[i] + "\t\t" + ta[i] + "\t\t" + wt[i]);
+        }
+        
+        // Average times
+        System.out.println("\nAverage waiting time: " + (avgwt / n));
+        System.out.println("Average turnaround time: " + (avgta / n));
+        
+        sc.close();
+    }
+}
+
+
+
+
+
+
+Enter number of processes: 
+3
+Enter process 1 arrival time: 
+0
+Enter process 1 burst time: 
+9
+Enter process 2 arrival time: 
+1
+Enter process 2 burst time: 
+4
+Enter process 3 arrival time: 
+2
+Enter process 3 burst time: 
+9
+
+pid	arrival	burst	complete	turnaround	waiting
+1	0	9	9		9		0
+2	1	4	13		12		8
+3	2	9	22		20		11
+
+Average waiting time: 6.3333335
+Average turnaround time: 13.666667

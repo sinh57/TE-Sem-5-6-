@@ -1,0 +1,104 @@
+import sys
+
+# --------------------------------------------------- Knowledge Base ----------------
+# Dictionary for positive criteria with corresponding score values
+positive_criteria = {
+    "exceeds_deadlines": 5,
+    "high_quality_work": 4,
+    "great_team_player": 3,
+    "consistently_improves": 2,
+    "excellent_communication": 1
+}
+
+# Dictionary for negative criteria with corresponding negative score values
+negative_criteria = {
+    "misses_deadlines": -5,
+    "poor_quality_work": -4,
+    "poor_team_player": -3,
+    "resistant_to_feedback": -2,
+    "poor_communication": -1
+}
+
+# ---------------------------------------- Rule Engine --------------------------------
+# Function to evaluate employee score based on provided positive and negative points
+def evaluate_employee(positives, negatives):
+    score = 0  # Initialize score
+
+    # Add points for each positive criterion
+    for pos in positives:
+        score += positive_criteria.get(pos, 0)  # Use 0 if criterion not found
+
+    # Add (subtract) points for each negative criterion
+    for neg in negatives:
+        score += negative_criteria.get(neg, 0)  # Use 0 if criterion not found
+
+    return score  # Final score
+
+# -------------------------------------------------- User Interface -------------------
+# Function to interact with user, collect input, and display results
+def user_interface():
+    print("Employee Performance Evaluation")
+    
+    # Prompt user for positive criteria
+    print("Please enter positive criteria from the list below, separated by commas:")
+    for criterion in positive_criteria:
+        print(f"- {criterion}")
+    
+    print("\n")
+    positives_input = input("> ")  # Take user input
+
+    # Prompt user for negative criteria
+    print("\nPlease enter negative criteria from the list below, separated by commas:")
+    for criterion in negative_criteria:
+        print(f"- {criterion}")
+    
+    print("\n")
+    negatives_input = input("> ")  # Take user input
+
+    # Split input strings and remove leading/trailing whitespace
+    positives = [item.strip() for item in positives_input.split(",")]
+    negatives = [item.strip() for item in negatives_input.split(",")]
+
+    # Evaluate performance score
+    score = evaluate_employee(positives, negatives)
+
+    # Display final score
+    print(f"\nEmployee Score: {score}\n")
+
+    # Performance category based on score
+    if score > 10:
+        print("Performance: Outstanding")
+    elif score > 5:
+        print("Performance: Good")
+    elif score > 0:
+        print("Performance: Satisfactory")
+    else:
+        print("Performance: Needs Improvement")
+
+
+# -------------------------- Main Function Entry Point ---------------------------
+# Run the interface only when the script is executed directly
+if __name__ == "__main__":
+    user_interface()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+******************************* input****************************
+
+exceeds_deadlines ,high_quality_work,excellent_communication
+
+
+poor_team_player

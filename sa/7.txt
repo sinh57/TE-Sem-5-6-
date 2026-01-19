@@ -1,0 +1,93 @@
+%pip install nltk
+#pip install nltk
+#In Anaconda Prompt or Command Prompt/Terminal, type:
+
+
+
+# Text Analytics: Simple Example
+# 1. Document Preprocessing: Tokenization, Stop Words Removal, Stemming, Lemmatization, POS Tagging
+# 2. TF and IDF Calculation
+
+import nltk
+import pandas as pd
+import re
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+from collections import Counter
+import math
+
+# Download required NLTK data (only needs to be run once)
+nltk.download('punkt')                 # For tokenization
+nltk.download('stopwords')             # Common stopwords
+nltk.download('wordnet')               # For lemmatization
+nltk.download('averaged_perceptron_tagger')  # For POS tagging
+
+
+# Sample document
+text = """Tokenization is the first step in text analytics. It breaks text into chunks. How to remove stop words with NLTK in Python?"""
+
+# 1. Tokenization
+words = word_tokenize(text.lower())
+print("Tokenized words:", words)
+
+# 2. Stop Words Removal
+stop_words = set(stopwords.words('english'))
+filtered_words = [w for w in words if w.isalpha() and w not in stop_words]
+print("After stop words removal:", filtered_words)
+
+# 3. Stemming
+ps = PorterStemmer()
+stemmed_words = [ps.stem(w) for w in filtered_words]
+print("After stemming:", stemmed_words)
+
+# 4. Lemmatization
+lemmatizer = WordNetLemmatizer()
+lemmatized_words = [lemmatizer.lemmatize(w) for w in filtered_words]
+print("After lemmatization:", lemmatized_words)
+
+# 5. POS Tagging
+pos_tags = nltk.pos_tag(filtered_words)
+print("POS tags:", pos_tags)
+
+# --- TF and IDF Calculation ---
+# For simplicity, let's use two small documents
+
+documents = [
+    "Tokenization is the first step in text analytics.",
+    "It breaks text into chunks. How to remove stop words with NLTK in Python?"
+]
+
+# Preprocess documents: tokenize, lowercase, remove stopwords, keep only words
+processed_docs = []
+for doc in documents:
+    tokens = word_tokenize(doc.lower())
+    filtered = [w for w in tokens if w.isalpha() and w not in stop_words]
+    processed_docs.append(filtered)
+
+# Calculate Term Frequency (TF)
+def compute_tf(doc):
+    tf = Counter(doc)
+    total = len(doc)
+    return {word: count/total for word, count in tf.items()}
+
+tf_list = [compute_tf(doc) for doc in processed_docs]
+print("\nTerm Frequencies:")
+for i, tf in enumerate(tf_list):
+    print(f"Doc {i+1}:", tf)
+
+# Calculate Inverse Document Frequency (IDF)
+all_words = set([w for doc in processed_docs for w in doc])
+N = len(processed_docs)
+idf = {}
+for word in all_words:
+    containing = sum(1 for doc in processed_docs if word in doc)
+    idf[word] = math.log(N / (1 + containing)) + 1  # Smoothing
+print("\nInverse Document Frequencies:", idf)
+
+# Calculate TF-IDF
+print("\nTF-IDF:")
+for i, tf in enumerate(tf_list):
+    tfidf = {word: tf[word] * idf[word] for word in tf}
+    print(f"Doc {i+1}:", tfidf)
+

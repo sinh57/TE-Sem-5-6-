@@ -1,0 +1,79 @@
+<html>
+<head>
+<title>Diffie-Hellman Key Exchange</title>
+</head>
+<body>
+<h2>Diffie-Hellman Key Exchange</h2>
+<hr>
+<script>
+// This program calculates the Key for two persons
+// using the Diffie-Hellman Key exchange algorithm
+
+// Function to calculate (a^b) % p using modular exponentiation
+function modExponentiation(a, b, p) {
+    let result = 1;
+    a = a % p;  // In case a is greater than or equal to p
+    while (b > 0) {
+        if (b % 2 === 1) {  // If b is odd, multiply a with result
+            result = (result * a) % p;
+        }
+        b = Math.floor(b / 2);  // Divide b by 2
+        a = (a * a) % p;  // Square a and mod p
+    }
+    return result;
+}
+
+// Driver code
+var P, G, a, b, x, y, ka, kb;
+// Both persons agree on public values P and G
+P = 23;
+document.write("The value of P: " + P + "<br>");
+// A primitive root for P, G
+G = 9;
+document.write("The value of G: " + G + "<br>");
+// Alice's private key
+a = 4;
+document.write("The private key a for Alice: " + a + "<br>");
+// Alice generates public key
+x = modExponentiation(G, a, P);
+
+// Bob's private key
+b = 3;
+document.write("The private key b for Bob: " + b + "<br>");
+// Bob generates public key
+y = modExponentiation(G, b, P);
+
+// Secret keys after exchange
+ka = modExponentiation(y, a, P); // Secret key for Alice
+kb = modExponentiation(x, b, P); // Secret key for Bob
+
+document.write("Secret key for Alice: " + ka + "<br>");
+document.write("Secret key for Bob: " + kb + "<br>");
+</script>
+</body>
+</html>
+
+
+
+
+
+
+#--------------------------output------------------
+
+1)
+nano diffie_hellman.html
+gedit diffie_hellman.html
+
+
+2)
+Paste your HTML/JavaScript code (the one I provided earlier) into this file.
+
+3)
+Save and exit (CTRL+O, then ENTER, and CTRL+X to exit if using nano).
+
+4)
+open in browser 
+
+or
+
+xdg-open diffie_hellman.html

@@ -1,0 +1,97 @@
+import pandas as pd
+
+# Set display options to avoid scientific notation
+pd.set_option('display.float_format', '{:.2f}'.format)
+
+
+
+# --- 1. Employee Salary Dataset Analysis ---
+
+# Step 1: Read the employee data from CSV file
+employee_file_path = "C:\\Users\\lenovo\\OneDrive\\Pictures\\dsbda\\input_csvfile\\Employee_Salary_Dataset.csv"
+df = pd.read_csv(employee_file_path)
+
+
+
+# Step 2: Print the column names in the DataFrame
+print("Columns in Employee Data:")
+print(df.columns)
+
+
+
+# Step 3: Group the data by 'Gender'
+gender_group = df.groupby('Gender')
+
+
+
+# Step 4: For each gender, get summary statistics for 'Age' and 'Salary'
+print("\n--- Summary statistics for Age and Salary grouped by Gender ---")
+for gender, group in gender_group:
+    print(f"\nGender: {gender}")
+    
+    # Get statistics for Age
+    print("Age statistics:")
+    print(group['Age'].describe())
+    
+    # Get statistics for Salary
+    print("Salary statistics:")
+    print(group['Salary'].describe())
+
+
+
+# Step 5: Print the list of Salary values for each Gender
+print("\n--- List of Salary values for each Gender ---")
+genders = df['Gender'].unique()
+
+for gender in genders:
+    # Filter rows for the current gender
+    gender_rows = df[df['Gender'] == gender]
+    
+    # Get the Salary column as a list
+    salary_list = gender_rows['Salary'].tolist()
+    print(f"Gender {gender}: {salary_list}")
+
+
+
+# Step 6: Create PaymentTier based on Salary
+# Define the bins for salary ranges
+salary_bins = [0, 50000, 70000, float('inf')]
+
+# Define the labels for each bin
+salary_labels = ['Low', 'Medium', 'High']
+
+# Create a new column 'PaymentTier' in the DataFrame
+payment_tier = pd.cut(df['Salary'], bins=salary_bins, labels=salary_labels)
+df['PaymentTier'] = payment_tier
+
+
+print(df['PaymentTier'])
+
+
+
+
+
+
+# --- 2. Iris Dataset Analysis ---
+
+# Step 1: Read the Iris dataset from CSV file
+iris_file_path = r"C:\\Users\\lenovo\\OneDrive\\Pictures\\dsbda\\input_csvfile\\Iris.csv"
+iris = pd.read_csv(iris_file_path)
+
+
+
+# Step 2: List of species to analyze
+species_list = ['Iris-setosa', 'Iris-versicolor', 'Iris-virginica']
+
+
+
+# Step 3: For each species, print statistical details
+for species in species_list:
+    print(f"\n--- Statistical details for {species} ---")
+    
+    # Filter the DataFrame for the current species
+    species_data = iris[iris['Species'] == species]
+    
+    # Get basic statistics for the current species
+    stats = species_data.describe(percentiles=[.25, .5, .75])
+    print(stats)

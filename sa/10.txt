@@ -1,0 +1,35 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Load the Iris dataset directly from UCI repository
+url = "https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data"
+columns = ['SepalLengthCm', 'SepalWidthCm', 'PetalLengthCm', 'PetalWidthCm', 'Species']
+df = pd.read_csv(url, names=columns)
+
+# 2. List features and their types
+print("Features and their types:")
+print(df.dtypes)
+print("\nSummary info:")
+print(df.info())
+
+# 3. Create a histogram for each numeric feature
+numeric_features = df.select_dtypes(include='number').columns
+df[numeric_features].hist(figsize=(10, 6))
+plt.suptitle("Histograms of Numeric Features")
+plt.show()
+
+# 4. Create a boxplot for each numeric feature
+df[numeric_features].plot(kind='box', subplots=True, layout=(2,2), figsize=(10,8), title="Boxplots of Numeric Features")
+plt.tight_layout()
+plt.show()
+
+# 5. Outlier identification
+print("\nOutlier Identification:")
+for col in numeric_features:
+    q1 = df[col].quantile(0.25)
+    q3 = df[col].quantile(0.75)
+    iqr = q3 - q1
+    outliers = df[(df[col] < (q1 - 1.5 * iqr)) | (df[col] > (q3 + 1.5 * iqr))]
+    print(f"{col}: {len(outliers)} outliers")
+
+print("\nBoxplots above show outliers as points outside the whiskers.")

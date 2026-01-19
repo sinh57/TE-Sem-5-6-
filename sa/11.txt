@@ -1,0 +1,77 @@
+****HADOOP Init****
+1) open Terminal as administrator.
+
+2) Run services of Hadoop :
+	>start-all.cmd  #wait until all log cmds open and minimize those windows
+	#for verification type:
+	>jps
+
+3) Open Browser --> localhost:9870  #For HDFS
+
+4) In HDFS -> utilities -> Browse Directory
+
+5) New tab --> localhost:8088  #For Hadoop Background Application (Minimize don't close)
+
+6) Open main cmd and type:
+	>Hadoop fs -mkdir /folder_name(inputs)  #To store input files which has need to passed to the program
+	#For verification go to the HDFS tab in Browser and search for "/" and check if there is any folder name your folder_name
+
+7) Now you have to create a input text file which has to be passed to the program, for that:
+	#Goto any location in your PC
+	#Create a folder(any name)
+	#In that folder create a text file(input_file.txt) and type input data in that file and save it.
+	#After all copy the PATH of that text file.
+
+8) Now you need to put that text file into your Current Directory created on HDFS using cmd:
+	>Hadoop fs -put Path(file.txt) /input(Directory name)
+	#For verification you repeat the same process of STEP-6
+	OR
+	>Hadoop fs -ls /input(Directory name)
+
+****CREATING JARs****
+1) First Open any IDE I prefer Eclips
+
+2) Now Create a new Java Project from menu --> files --> new --> JavaProject name"MapReduceWordCount"
+#Note: select JavaSE-1.8 in "Use an execution environment JRE"
+
+3) After this Create a Package name "com.mapreduce.wc" for this:
+	#Right click on project file --> new --> Package --> name Package --> Finish
+
+4) Adding External JAR files: 
+	#Right click on project --> Build Path --> Configure Build Path
+	#In Libraries --> Add External JARs
+	#Locate your Hadoop folder in your PC
+	#Now follow : Hadoop --> share --> Hadoop --> (Now there a multiple folders there, you need to follow this sequence to add JARs)
+
+5) Sequence of Adding External JARs:
+	a)client --> all JARs	
+	b)common --> all JARs Only
+	c)common --> lib --> all JARs
+	d)yarn --> all JARs Only
+	e)mapreduce --> all JARs Only
+	f)hdfs --> all JARs Only
+	#After this Click on Apply and Close Btn
+
+
+6) Create Your Class by right clicking on your created Package --> new --> class then name(WordCount) (Write your code and save it)
+#Note: If any ERROR occurs then again Add the External JARs (hadfs -> lib, mapreduce -> lib, yarn -> lib)
+
+
+7) Creatin own JAR File:
+	#Right click on project --> Export...
+	#Java --> JAR file --> Next
+	#Chaneg the Path: Browse --> Choose any location --> Crate Forlder for your JAR Files --> Save --> Finish
+
+
+8) Goto that JAR Files location and copy it's Path
+
+
+9) Open main cmd type:
+	>hadoop jar JAR_fil_path com.mapreduce.wc/WordCount /input/input_file.txt /output
+	#If no any ERROR occurs then your program was successfully Executed
+
+
+10) To check output in cmd type:
+	>hadoop dfs -cat /output/*
+	(Optional for saving output in your pc)
+	>Hadoop dfs -get /output/(directory path where you want to save the output file)/output_file.txt

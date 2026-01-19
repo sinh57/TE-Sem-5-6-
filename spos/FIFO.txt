@@ -1,0 +1,68 @@
+import java.io.*;
+
+class FIFO {
+    public static void main(String args[]) throws IOException {
+
+        int n; // number of inputs (pages)
+        int f; // number of frames
+
+        // Input via BufferedReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        // Input the number of frames
+        System.out.println("Enter the number of FRAMES :");
+        f = Integer.parseInt(br.readLine());
+        int fifo[] = new int[f];
+
+        // Input the number of pages (inputs)
+        System.out.println("Enter the number of INPUTS (pages) :");
+        n = Integer.parseInt(br.readLine());
+        int inp[] = new int[n];
+
+        // Input the pages (inputs)
+        System.out.println("Enter the INPUTS (page numbers):");
+        for (int i = 0; i < n; i++) {
+            inp[i] = Integer.parseInt(br.readLine());
+        }
+
+        // Initialize all frames to -1 (representing empty)
+        for (int i = 0; i < f; i++) {
+            fifo[i] = -1;
+        }
+
+        // Variables for counting hits and faults
+        int Hit = 0;
+        int Fault = 0;
+        int j = 0; // Index to track the replacement in the frame
+
+        // Processing each page (input)
+        for (int i = 0; i < n; i++) {
+            boolean check = false; // Variable to check if a page hit occurs
+
+            // Check if the page is already in any frame (HIT condition)
+            for (int k = 0; k < f; k++) {
+                if (fifo[k] == inp[i]) {
+                    check = true; // Page hit
+                    Hit++;
+                    break;
+                }
+            }
+
+            // If page is not found in any frame (FAULT condition)
+            if (!check) {
+                fifo[j] = inp[i]; // Replace the page at index `j`
+                j = (j + 1) % f;  // Move to the next frame in FIFO order
+                Fault++;
+            }
+        }
+
+        // Calculate the hit ratio
+        float hitRatio = (float) Hit / (float) n;
+
+        // Output the results
+        System.out.println("----------------------");
+        System.out.println("HIT: " + Hit);
+        System.out.println("FAULT: " + Fault);
+        System.out.printf("HIT RATIO: %.2f\n", hitRatio);
+    }
+}

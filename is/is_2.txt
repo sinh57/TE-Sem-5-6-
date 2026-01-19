@@ -1,0 +1,76 @@
+import math
+
+# Define the encryption key
+key = "Sumit"
+
+# Function to encrypt the message
+def encryptMessage(msg):
+    cipher = ""            # Encrypted message will be stored here
+    k_indx = 0             # Index for iterating over the sorted key
+    msg_len = float(len(msg))     # Length of the message
+    msg_lst = list(msg)           # Convert message to a list of characters
+    key_lst = sorted(list(key))   # Alphabetically sorted key characters
+    col = len(key)                # Number of columns = length of key
+    row = int(math.ceil(msg_len / col))  # Number of rows (rounded up)
+
+    # Padding the message with underscores if it's not a perfect fit
+    fill_null = int((row * col) - msg_len)
+    msg_lst.extend('_' * fill_null)
+
+    # Create the matrix row-wise with message characters
+    matrix = [msg_lst[i: i + col] for i in range(0, len(msg_lst), col)]
+
+    # Rearranging columns based on alphabetical order of the key
+    for _ in range(col):
+        # Find the original index of the next sorted key character
+        curr_idx = key.index(key_lst[k_indx])
+        # Add characters column-wise to the cipher text
+        cipher += ''.join([row[curr_idx] for row in matrix])
+        k_indx += 1
+
+    return cipher
+
+# Function to decrypt the message
+def decryptMessage(cipher):
+    msg = ""                # Decrypted message will be stored here
+    k_indx = 0              # Index for sorted key
+    msg_indx = 0            # Index to traverse cipher text
+    msg_len = float(len(cipher))
+    msg_lst = list(cipher)
+    col = len(key)          # Columns are the length of the key
+    row = int(math.ceil(msg_len / col))  # Rows required
+    key_lst = sorted(list(key))  # Alphabetically sorted key
+
+    # Create an empty matrix to fill characters column-wise
+    dec_cipher = [[None] * col for _ in range(row)]
+
+    # Fill matrix column-wise based on sorted key order
+    for _ in range(col):
+        curr_idx = key.index(key_lst[k_indx])
+        for j in range(row):
+            dec_cipher[j][curr_idx] = msg_lst[msg_indx]
+            msg_indx += 1
+        k_indx += 1
+
+    # Flatten the matrix back into a string
+    try:
+        msg = ''.join(sum(dec_cipher, []))  # sum() flattens the 2D list
+    except TypeError:
+        raise TypeError("This program cannot handle repeating characters in the key.")
+
+    # Remove any underscore padding from the decrypted message
+    null_count = msg.count('_')
+    if null_count > 0:
+        return msg[:-null_count]
+    return msg
+
+# --- Main Program ---
+def main():
+    msg = input("Enter String: ")
+    cipher = encryptMessage(msg)
+    print("Encrypted Message: {}".format(cipher))
+    print("Decrypted Message: {}".format(decryptMessage(cipher)))
+
+# Execute main function
+if __name__ == "__main__":
+    main()

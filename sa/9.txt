@@ -1,0 +1,58 @@
+# Step 1: Import necessary libraries
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from seaborn import load_dataset
+
+# Enable inline plotting
+%matplotlib inline
+# Load the inbuilt titanic dataset
+titanic = sns.load_dataset('titanic')
+
+print(titanic.head(5))
+#OR
+
+#read file 
+#titanic= pd.read_csv()
+
+
+
+# Step 3: Box plot for age distribution by gender and survival
+plt.figure(figsize=(8,6))
+sns.boxplot(x='sex', y='age', hue='survived', data= titanic)
+plt.title('Age Distribution by Sex and Survival')
+plt.xlabel('Gender')
+plt.ylabel('Age')
+plt.legend(title='Survived', loc='upper right', labels=['No', 'Yes'])
+plt.show()
+
+
+
+
+# Observations:
+print("""
+Observations:
+- The median age of both males and females who survived is higher than those who did not survive.
+- Younger males had a lower survival rate compared to younger females.
+- The age distribution for females who survived is slightly higher than those who did not.
+- There are more outliers among males, especially those who did not survive.
+""")
+
+
+
+
+#2. Write observations on the inference from the above statistics
+
+#Observations (what you need to write for the second part):
+#From the box plot, we can infer the following:
+
+#Generally, females tend to be younger compared to males among both survivors #and non-survivors.
+
+#Females had higher survival rates compared to males (shown by the higher #number of survivors in the female category).
+
+#Among males, the age distribution is wider, and survival rates are #comparatively lower.
+
+#There are a few elderly survivors, but most survivors are younger adults.
+
+#This suggests that women and children were given priority during the rescue.

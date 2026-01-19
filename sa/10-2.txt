@@ -1,0 +1,131 @@
+print("""
+1. Features and their types
+
+Here are the features available in the Iris dataset:
+Feature Name Type
+---------------- ------------------
+Id Numeric (Integer)
+SepalLengthCm Numeric (Float)
+SepalWidthCm Numeric (Float)
+PetalLengthCm Numeric (Float)
+PetalWidthCm Numeric (Float)
+Species Nominal (Categorical)
+Numeric features: Id, SepalLengthCm, SepalWidthCm, PetalLengthCm, PetalWidthCm
+Nominal features: Species (Values: Iris-setosa, Iris-versicolor, Iris-virginica) 
+
+
+""")
+
+
+
+
+#2. Histogram for each feature
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the Iris dataset
+df = pd.read_csv(r"C:\Users\lenovo\OneDrive\Pictures\dsbda\input_csvfile\Iris.csv")
+
+# Create 2x2 subplots for numeric feature distributions
+fig, axes = plt.subplots(2, 2, figsize=(16, 8))
+
+axes[0,0].set_title("Distribution of Sepal Length (cm)")
+axes[0,0].hist(df["SepalLengthCm"], bins=10, color='skyblue', edgecolor='black')
+
+axes[0,1].set_title("Distribution of Sepal Width (cm)")
+axes[0,1].hist(df["SepalWidthCm"], bins=10, color='lightgreen', edgecolor='black')
+
+axes[1,0].set_title("Distribution of Petal Length (cm)")
+axes[1,0].hist(df["PetalLengthCm"], bins=10, color='lightcoral', edgecolor='black')
+
+axes[1,1].set_title("Distribution of Petal Width (cm)")
+axes[1,1].hist(df["PetalWidthCm"], bins=10, color='gold', edgecolor='black')
+
+plt.tight_layout()
+plt.show()
+
+
+
+
+#3. Boxplot for each feature
+
+# Create 2x2 subplots for boxplots by Species
+fig, axes = plt.subplots(2, 2, figsize=(16, 9))
+
+# Sepal Length
+axes[0, 0].set_title("Boxplot of Sepal Length by Species")
+sns.boxplot(x="Species", y="SepalLengthCm", data=df, ax=axes[0,0])
+
+# Sepal Width
+axes[0, 1].set_title("Boxplot of Sepal Width by Species")
+sns.boxplot(x="Species", y="SepalWidthCm", data=df, ax=axes[0,1])
+
+# Petal Length
+axes[1, 0].set_title("Boxplot of Petal Length by Species")
+sns.boxplot(x="Species", y="PetalLengthCm", data=df, ax=axes[1,0])
+
+# Petal Width
+axes[1, 1].set_title("Boxplot of Petal Width by Species")
+sns.boxplot(x="Species", y="PetalWidthCm", data=df, ax=axes[1,1])
+
+plt.tight_layout()
+plt.show()
+
+# Print the observations
+print("""
+4. Observations: Compare Distributions & Identify Outliers
+
+Detailed Analysis by Feature:
+
+1. Sepal Length (SepalLengthCm):
+   - Distribution shows clear species differentiation
+   - Iris-setosa: Generally shorter sepals (4.3-5.8 cm)
+   - Iris-versicolor: Medium length sepals (4.9-7.0 cm)
+   - Iris-virginica: Longer sepals (5.6-7.9 cm)
+   - Minimal overlap between species
+   - No significant outliers observed
+
+2. Sepal Width (SepalWidthCm):
+   - Most variable feature with considerable overlap
+   - Iris-setosa: Widest spread in measurements
+   - Notable outliers present:
+     * Low outliers across all species
+     * Most pronounced in Iris-versicolor
+   - Least useful feature for species discrimination
+
+3. Petal Length (PetalLengthCm):
+   - Strongest discriminating feature
+   - Clear three-way separation between species:
+     * Iris-setosa: Distinctly small petals (1-2 cm)
+     * Iris-versicolor: Medium petals (3-5 cm)
+     * Iris-virginica: Longest petals (4.5-7 cm)
+   - No significant outliers
+   - Highly reliable for classification
+
+4. Petal Width (PetalWidthCm):
+   - Excellent species separation
+   - Clear progression from narrow to wide:
+     * Iris-setosa: Narrowest (0.1-0.5 cm)
+     * Iris-versicolor: Medium (1.0-1.8 cm)
+     * Iris-virginica: Widest (1.4-2.5 cm)
+   - Very few overlapping measurements
+   - No major outliers
+
+Key Findings and Implications:
+1. Best Features for Classification:
+   - Petal Length and Petal Width show the clearest species separation
+   - These should be primary features for species classification models
+
+2. Challenging Features:
+   - Sepal Width shows the most overlap and outliers
+   - May be less reliable for species discrimination
+
+3. Data Quality:
+   - Generally clean dataset with few outliers
+   - Most outliers concentrated in Sepal Width measurements
+   - High reliability for machine learning applications
+""")
+
+

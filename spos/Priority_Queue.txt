@@ -1,0 +1,73 @@
+import java.util.Scanner;
+
+public class Priority {
+    public static void main(String args[]) {
+        Scanner sn = new Scanner(System.in);
+        System.out.print("Enter Number of processes: ");
+        int n = sn.nextInt();
+
+        int process[] = new int[n];  // Array to store process numbers
+        int priority[] = new int[n]; // Array to store priorities
+        int burst[] = new int[n];    // Array to store burst times
+        int completion[] = new int[n]; // Array to store completion times
+        int WT[] = new int[n];       // Array to store waiting times
+        int TAT[] = new int[n];      // Array to store turnaround times
+        float totalTurnaroundTime = 0, totalWaitTime = 0;
+
+        // Input process details
+        for (int i = 0; i < n; i++) {
+            System.out.print("Enter Process " + (i + 1) + " Burst Time: ");
+            burst[i] = sn.nextInt();
+
+            System.out.print("Enter Process " + (i + 1) + " Priority: ");
+            priority[i] = sn.nextInt();
+
+            process[i] = i + 1; // Store process number (1, 2, 3, ...)
+        }
+
+        // Sort processes based on priority (higher priority first, lower value = higher priority)
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (priority[i] > priority[j]) {  // Sort based on priority
+                    // Swap priority
+                    int temp = priority[i];
+                    priority[i] = priority[j];
+                    priority[j] = temp;
+
+                    // Swap process number
+                    temp = process[i];
+                    process[i] = process[j];
+                    process[j] = temp;
+
+                    // Swap burst time
+                    temp = burst[i];
+                    burst[i] = burst[j];
+                    burst[j] = temp;
+                }
+            }
+        }
+
+        // Calculate completion time, turnaround time, and waiting time
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += burst[i];        // Completion time = cumulative burst time
+            completion[i] = sum;    // Store completion time
+
+            TAT[i] = completion[i]; // Turnaround time = completion time (since arrival time is 0)
+            totalTurnaroundTime += TAT[i];
+
+            WT[i] = TAT[i] - burst[i]; // Waiting time = turnaround time - burst time
+            totalWaitTime += WT[i];
+        }
+
+        // Output the results
+        System.out.println("\nPriority\tProcess\tBurst Time\tCompletion\tWaiting Time\tTurnaround Time");
+        for (int i = 0; i < n; i++) {
+            System.out.println(priority[i] + "\t\t" + process[i] + "\t\t" + burst[i] + "\t\t" + completion[i] + "\t\t" + WT[i] + "\t\t" + TAT[i]);
+        }
+
+        // Calculate and print average turnaround time and average waiting time
+        System.out.printf("\nAverage Turnaround Time: %.2f\n", (totalTurnaroundTime / n));
+        System.out.printf("Average Waiting Time: %.2f\n", (totalWaitTime / n));
+    }
+}

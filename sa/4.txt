@@ -1,0 +1,152 @@
+# Imports the pandas library for data manipulation and analysis
+import pandas as pd
+# Imports the NumPy library for numerical computing and array handling
+import numpy as np
+# Imports the matplotlib library for plotting graphs and visualizations
+import matplotlib.pyplot as plt
+
+
+
+ # Creates a NumPy array 'x' and 'y' with given values
+x=np.array([95,85,80,70,60])
+y=np.array([85,95,70,65,70])
+print(x,y)
+
+
+ # Fits a first-degree polynomial (linear regression) to the data points (x, y)
+# and returns the slope and intercept
+model=np.polyfit(x,y,1)
+
+
+# Displays the coefficients of the linear model:-- 
+#slope (m) and intercept (b) of the best-fit line
+print(model)
+
+
+# Creates a polynomial function from the model coefficients
+predict = np.poly1d(model)
+# Uses the polynomial function to predict the value of y when x = 65
+predict(65)
+
+
+
+# Uses the polynomial function to predict the values of y for all x values
+y_pred=predict(x)
+# Displays the predicted values of y based on the x values
+print(y_pred)
+
+
+
+from sklearn.metrics import r2_score
+ # Calculates the R-squared value,
+# which measures how well the predicted values match the actual values
+r2_score(y,y_pred)
+
+
+
+# Calculates the line using the slope and intercept from the model
+y_line = model[1] + model[0] * x
+# Plots the linear regression line in red
+plt.plot(x, y_line, c="r")
+# Plots the predicted values as scatter points
+plt.scatter(x, y_pred)
+# Plots the actual values as red scatter points
+plt.scatter(x, y, c="r")
+# Displays the plot
+plt.show() 
+
+
+
+
+
+
+
+
+
+import pandas as pd 
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+data=pd.read_csv("C:\\Users\lenovo\OneDrive\Pictures\dsbda\input_csvfile\Boston.csv")
+
+
+data.head(9)
+
+
+# Accesses the 'MEDV' column in the DataFrame 'data'
+data['medv']
+
+
+
+# Returns the number of missing (NaN) values in each column of the DataFrame
+data.isnull().sum()
+
+
+
+# Creates feature matrix 'x' by dropping the 'MEDV' column from the DataFrame
+x = data.drop(['medv'], axis=1) 
+# Sets 'y' as the target variable containing values from the 'MEDV' column
+y = data['medv']
+
+
+
+from sklearn.model_selection import train_test_split
+ # Splits the data into training and 
+#testing sets with 80% training and 20% testing
+xtrain,xtest,ytrain,ytest=train_test_split(x,y,test_size=0.2)
+
+
+
+import sklearn
+from sklearn.linear_model import LinearRegression
+# Creates a LinearRegression model instance
+lm = LinearRegression()
+# Trains the model using the training data
+model = lm.fit(xtrain, ytrain)  
+
+
+
+# Predicts the target values for the training data
+ytrain_pred = lm.predict(xtrain) 
+print(ytrain_pred)
+# Predicts the target values for the testing data
+ytest_pred = lm.predict(xtest) 
+print(ytest_pred )
+
+
+
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
+# Evaluation metrics for training set
+r2_train = r2_score(ytrain, ytrain_pred)
+rmse_train = np.sqrt(mean_squared_error(ytrain, ytrain_pred))
+mae_train = mean_absolute_error(ytrain, ytrain_pred)
+
+# Evaluation metrics for test set
+r2_test = r2_score(ytest, ytest_pred)
+rmse_test = np.sqrt(mean_squared_error(ytest, ytest_pred))
+mae_test = mean_absolute_error(ytest, ytest_pred)
+
+print('Training set:')
+print(f'R2: {r2_train:.3f}, RMSE: {rmse_train:.3f}, MAE: {mae_train:.3f}')
+print('Test set:')
+print(f'R2: {r2_test:.3f}, RMSE: {rmse_test:.3f}, MAE: {mae_test:.3f}')
+
+
+
+# Plots training data: actual vs predicted in blue circles
+plt.scatter(ytrain, ytrain_pred, c='blue', marker='o', label="Training data")  
+# Plots test data: actual vs predicted in red pentagons
+plt.scatter(ytest, ytest_pred, c='red', marker='p', label="Test data")  
+# Label for x-axis
+plt.xlabel('True values')  
+# Label for y-axis
+plt.ylabel('Predicted') 
+# Title of the plot
+plt.title("True value vs Predicted value")  
+# Displays the legend in the lower right corner
+plt.legend(loc='lower right')  
+ # Renders the plot
+plt.show() 
+

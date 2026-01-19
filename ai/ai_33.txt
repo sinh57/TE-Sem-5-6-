@@ -1,0 +1,75 @@
+# ------------------- Selection Sort -------------------
+def selection_sort(arr):
+    # Loop through each element in the array
+    for i in range(len(arr)):
+        # Assume the current element is the smallest
+        min_index = i
+
+        # Look for a smaller element in the rest of the array
+        for j in range(i + 1, len(arr)):
+            # If we find a smaller element, update the min_index
+            if arr[j] < arr[min_index]:
+                min_index = j
+
+        # Swap the smallest found element with the current element
+        arr[i], arr[min_index] = arr[min_index], arr[i]
+
+    # Return the sorted array
+    return arr
+
+# Sample input
+a1 = [20, 10, 5, 7, 9, 13]
+
+# Print the sorted array
+print("Sorted Array (Selection Sort):", selection_sort(a1))
+# Output: [5, 7, 9, 10, 13, 20]
+
+
+
+
+
+
+
+# ------------------- Prim's Algorithm -------------------
+import heapq  # Import heapq for using a min-heap (priority queue)
+
+def prim(graph, start):
+    mst = []  # This will store the edges of the Minimum Spanning Tree (MST)
+    visited = set([start])  # Set to track visited nodes
+    # Get all edges from the start node (cost, from, to)
+    edges = [(cost, start, to) for to, cost in graph[start].items()]
+
+    # Convert the list of edges into a min-heap (smallest cost at the top)
+    heapq.heapify(edges)
+
+    # Continue until there are no more edges to process
+    while edges:
+        cost, frm, to = heapq.heappop(edges)  # Get the edge with the smallest cost
+
+        # If the destination node is not visited
+        if to not in visited:
+            visited.add(to)  # Mark the node as visited
+            mst.append((frm, to, cost))  # Add this edge to the MST
+
+            # Add all new edges from the newly visited node
+            for to_next, cost2 in graph[to].items():
+                if to_next not in visited:
+                    heapq.heappush(edges, (cost2, to, to_next))
+
+    return mst  # Return the final MST
+
+# Example graph (using adjacency list)
+graph = {
+    'A': {'B': 2, 'C': 3},
+    'B': {'A': 2, 'C': 1, 'D': 1},
+    'C': {'A': 3, 'B': 1, 'D': 4},
+    'D': {'B': 1, 'C': 4}
+}
+
+# Print the Minimum Spanning Tree
+print("Minimum Spanning Tree (Prim's Algorithm):")
+mst_result = prim(graph, 'A')
+for edge in mst_result:
+    # Example: A -- 2 --> B
+    print(f"{edge[0]} -- {edge[2]} --> {edge[1]}")
+

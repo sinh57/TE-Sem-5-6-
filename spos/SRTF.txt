@@ -1,0 +1,81 @@
+import java.util.Scanner;
+
+public class SRTF {
+    public static void main (String args[]) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter number of processes:");
+        int n = sc.nextInt(); // Number of processes
+        
+        int pid[] = new int[n];    // Process IDs
+        int at[] = new int[n];     // Arrival times
+        int bt[] = new int[n];     // Burst times
+        int ct[] = new int[n];     // Completion times
+        int ta[] = new int[n];     // Turnaround times
+        int wt[] = new int[n];     // Waiting times
+        int f[] = new int[n];      // Flag to indicate process completion
+        int k[] = new int[n];      // Copy of burst times for calculation
+        
+        int i, st = 0, tot = 0;    // `st` is system time, `tot` is total completed processes
+        float avgwt = 0, avgta = 0; // Variables for calculating averages
+        
+        // Input processes' arrival and burst times
+        for (i = 0; i < n; i++) {
+            pid[i] = i + 1;
+            System.out.println("Enter process " + (i + 1) + " arrival time:");
+            at[i] = sc.nextInt();
+            System.out.println("Enter process " + (i + 1) + " burst time:");
+            bt[i] = sc.nextInt();
+            k[i] = bt[i];    // Copy burst time for future use
+            f[i] = 0;        // Initialize all flags to 0 (not completed)
+        }
+
+        // SRTF scheduling logic
+        while (true) {
+            int min = 99, c = n; // Initialize `min` with a large number, `c` to an invalid index
+
+            if (tot == n)  // When all processes are completed, exit loop
+                break;
+
+            // Find the process with the shortest remaining time that's ready
+            for (i = 0; i < n; i++) {
+                if ((at[i] <= st) && (f[i] == 0) && (bt[i] < min)) {
+                    min = bt[i];
+                    c = i;
+                }
+            }
+
+            if (c == n) {  // If no process is found (no processes have arrived yet), increment time
+                st++;
+            } else {
+                bt[c]--;    // Decrease burst time of the selected process
+                st++;       // Increment system time
+
+                if (bt[c] == 0) {   // If the process is completed
+                    ct[c] = st;     // Completion time is the current system time
+                    f[c] = 1;       // Mark process as completed
+                    tot++;          // Increment total completed processes
+                }
+            }
+        }
+
+        // Calculate turnaround time and waiting time for each process
+        for (i = 0; i < n; i++) {
+            ta[i] = ct[i] - at[i];  // Turnaround time = completion time - arrival time
+            wt[i] = ta[i] - k[i];   // Waiting time = turnaround time - burst time
+            avgwt += wt[i];         // Accumulate waiting time for average calculation
+            avgta += ta[i];         // Accumulate turnaround time for average calculation
+        }
+
+        // Output process details
+        System.out.println("PID\tArrival\tBurst\tCompletion\tTurnaround\tWaiting");
+        for (i = 0; i < n; i++) {
+            System.out.println(pid[i] + "\t" + at[i] + "\t" + k[i] + "\t" + ct[i] + "\t\t" + ta[i] + "\t\t" + wt[i]);
+        }
+
+        // Output average turnaround time and waiting time
+        System.out.printf("\nAverage Turnaround Time: %.2f\n", (avgta / n));
+        System.out.printf("Average Waiting Time: %.2f\n", (avgwt / n));
+
+        sc.close();  // Close the scanner to avoid resource leak
+    }
+}

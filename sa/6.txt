@@ -1,0 +1,68 @@
+# Simple Naive Bayes Classification on Iris Dataset
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score
+
+# 1. Load the dataset
+df = pd.read_csv("C:\\Users\\lenovo\\OneDrive\\Pictures\\dsbda\\input_csvfile\\Iris.csv")
+
+# 2. Explore the dataset
+print("First 5 rows of the dataset:")
+print(df.head())
+print("\nDataset description:")
+print(df.describe())
+print("\nDataset shape:", df.shape)
+
+# 3. Prepare features and target
+X = df.iloc[:, :-1].values  # all columns except last
+y = df.iloc[:, -1].values   # last column (Species)
+
+# 4. Split into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 5. Feature scaling (optional for Naive Bayes, but often used)
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# 6. Train Naive Bayes classifier
+model = GaussianNB()       # Create the model object
+model.fit(X_train, y_train)  # Train the model
+
+
+# 7. Predict on test set
+#Applies Bayes’ Theorem.
+y_pred = model.predict(X_test)
+
+# 8. Confusion Matrix and Metrics
+cm = confusion_matrix(y_test, y_pred, labels=model.classes_)
+print("\nConfusion Matrix:")
+print(cm)
+
+# For multi-class, let's compute metrics for each class
+for idx, label in enumerate(model.classes_):
+    TP = cm[idx, idx]
+    FP = cm[:, idx].sum() - TP
+    FN = cm[idx, :].sum() - TP
+    TN = cm.sum() - (TP + FP + FN)
+    print(f"\nMetrics for class '{label}':")
+    print(f"  TP: {TP}, FP: {FP}, FN: {FN}, TN: {TN}")
+    accuracy = (TP + TN) / cm.sum()
+    error_rate = 1 - accuracy
+    precision = TP / (TP + FP) if (TP + FP) > 0 else 0
+    recall = TP / (TP + FN) if (TP + FN) > 0 else 0
+    print(f"  Accuracy: {accuracy:.2f}")
+    print(f"  Error Rate: {error_rate:.2f}")
+    print(f"  Precision: {precision:.2f}")
+    print(f"  Recall: {recall:.2f}")
+
+# 9. Overall accuracy
+print("\nOverall Accuracy:", accuracy_score(y_test, y_pred))
+
+# 10. Compare real and predicted values
+comparison_df = pd.DataFrame({'Real Values': y_test, 'Predicted Values': y_pred})
+print("\nComparison of Real and Predicted Values:")
+print(comparison_df.head())

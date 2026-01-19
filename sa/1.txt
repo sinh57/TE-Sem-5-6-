@@ -1,0 +1,94 @@
+# Import required libraries
+import numpy as np  # For numerical operations
+import pandas as pd  # For data manipulation and analysis
+import matplotlib.pyplot as plt  # For data visualization
+import seaborn as sns  # For advanced statistical plotting
+from sklearn.preprocessing import MinMaxScaler  # For data normalization
+
+# Load the dataset
+weather = pd.read_csv("weatherAUS.csv")  # Read CSV file into a DataFrame
+
+# Initial Data Exploration
+print("Original Dataset Shape:", weather.shape)
+print("\nOriginal Columns:", weather.columns.tolist())
+
+
+
+#5 Convert categorical columns to dummy variables (excluding Date)
+#5.1 Identify categorical columns (excluding Date as it's temporal)
+categorical_cols = weather.select_dtypes('object').columns.drop('Date', errors='ignore')
+weather = pd.get_dummies(weather, columns=categorical_cols)# Convert categorical variables to dummy variables
+
+# 5.2 Identify numeric columns for normalization (excluding dummy variables)
+numeric_cols = weather.select_dtypes(include=['float64', 'int64']).columns
+
+
+
+
+
+# 4 Normalize numeric columns using MinMaxScaler
+scaler = MinMaxScaler()
+weather[numeric_cols] = scaler.fit_transform(weather[numeric_cols])
+
+print("Normalized columns:", numeric_cols.tolist())
+
+
+# Display the results
+print("\nEncoded Dataset Shape:", weather.shape)
+print("\nNew columns after encoding (first 10):", weather.columns.tolist()[:10])
+
+# Save the encoded dataset if needed
+# weather_encoded.to_csv("weather_encoded.csv", index=False)
+
+# Initial Data Exploration
+print(weather.head(4))  # Display the first 4 rows
+print(weather.tail(4))  # Display the last 4 rows
+print(weather.index)  # Show the index range of the DataFrame
+print(weather.columns)  # List column names
+print(weather.shape)  # Display number of rows and columns
+
+# Data Information
+print(weather.dtypes)  # Display data types of all columns
+print(weather.columns.values)  # Display column names as an array
+print(weather.describe(include="all"))  # Summary statistics of the dataset
+
+# Data Selection and Viewing
+print(weather["Location"])  # View values in 'Location' column
+print(weather.iloc[5])  # Access the 6th row of the DataFrame
+print(weather[0:3])  # View the first 3 rows
+print(weather.loc[:, ["Date", "Location"]])  # Select specific columns
+print(weather.iloc[:6, :])  # Select first 6 rows
+print(weather.iloc[:, :5])  # Select first 5 columns of all rows
+print(weather.iloc[:4, :5])  # Select top-left block of the dataset
+
+# Sorting and Indexing
+weather = weather.sort_index(axis=1, ascending=False)  # Sort columns in descending order
+weather = weather.sort_values(by="Location")  # Sort dataset by 'Location' column
+
+# Handling Missing Data
+print(weather.isnull())  # Identify missing values
+print(weather.isnull().any())  # Check which columns have missing values
+print(weather.isnull().sum(axis=1))  # Count missing values per row
+print(weather.isnull().sum())  # Count missing values per column
+
+# Data Type Conversion and Analysis
+weather = weather.apply(pd.to_numeric, errors='coerce')  # Convert all columns to numeric, invalid parsing will be NaN
+print(weather.dtypes)  # Verify the data types after conversion
+print(weather.describe())  # Get updated descriptive statistics
+print(weather.std())  # Standard deviation of numerical columns
+print(weather.mean())  # Mean of numerical columns
+
+# Encoding Categorical Data
+print(pd.get_dummies(weather['Age']))  # One-hot encode 'Age' column (if present)
+print(pd.get_dummies(weather['Glucose']))  # One-hot encode 'Glucose' column (if present)
+
+# Data Exploration and Summary
+print(weather.count())  # Count non-null values in each column
+print(weather.median())  # Median of numeric columns
+print(weather.quantile())  # Quantiles of numeric data
+print(weather.min())  # Minimum values
+print(weather.max())  # Maximum values
+
+# Unique Value Exploration
+for col in weather.columns:
+    print(f"Unique values in {col}: {weather[col].unique()}")  # Display unique values for each column

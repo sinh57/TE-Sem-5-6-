@@ -1,0 +1,72 @@
+# Define the graph with nodes and their neighbors
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F', 'G'],
+    'D': ['H', 'I'],
+    'E': [],
+    'F': ['J', 'K'],
+    'G': [],
+    'H': [],
+    'I': [],
+    'J': [],
+    'K': []
+}
+
+
+
+
+
+
+
+# ------------------ BFS Function ------------------
+def bfs(visited, graph, node):
+    # Initialize an empty queue and mark the starting node as visited
+    queue = []
+    visited.append(node)
+    queue.append(node)
+
+    while queue:
+        # Pop the first element from the queue to visit
+        m = queue.pop(0)
+        print(m, end=" ")
+
+        # Check all neighbors of the current node
+        for neighbour in graph[m]:
+            # If the neighbor hasn't been visited, add it to the queue
+            if neighbour not in visited:
+                visited.append(neighbour)
+                queue.append(neighbour)
+
+
+
+
+
+# ------------------ DFS Function ------------------
+def dfs(visited, graph, node):
+    # If the node has not been visited, print and mark it as visited
+    if node not in visited:
+        print(node)  # Changed to print vertically
+        visited.add(node)
+        # Recursively visit all the neighbors of the node
+        for neighbour in graph[node]:
+            dfs(visited, graph, neighbour)
+
+
+
+
+
+# ------------------ Run BFS ------------------
+print("Following is the BFS:")
+visited_bfs = []  # Initialize an empty list for BFS visited nodes
+bfs(visited_bfs, graph, 'A')  # Run BFS starting from node 'A'
+
+
+
+
+
+
+# ------------------ Run DFS ------------------
+print("\n\nFollowing is the DFS:")
+visited_dfs = set()  # Initialize an empty set for DFS visited nodes
+dfs(visited_dfs, graph, 'A')  # Run DFS starting from node 'A'

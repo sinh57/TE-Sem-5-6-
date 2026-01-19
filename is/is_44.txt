@@ -1,0 +1,81 @@
+import random
+
+# Function to compute the greatest common divisor using Euclidean Algorithm
+def gcd(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
+
+# Function to compute the multiplicative inverse using Extended Euclidean Algorithm
+def multiplicative_inverse(e, phi):
+    d = 0
+    x1, x2 = 0, 1
+    y1 = 1
+    temp_phi = phi
+
+    while e > 0:
+        temp1 = temp_phi // e
+        temp2 = temp_phi - temp1 * e
+        temp_phi = e
+        e = temp2
+
+        x = x2 - temp1 * x1
+        y = d - temp1 * y1
+
+        x2, x1 = x1, x
+        d, y1 = y1, y
+
+    # Ensure d is positive
+    if temp_phi == 1:
+        return d + phi
+
+# Function to generate RSA key pair
+def generate_keypair(p, q):
+    n = p * q                             # n = modulus
+    phi = (p - 1) * (q - 1)               # Euler's totient function
+    e = random.randrange(1, phi)         # Public exponent
+
+    # Ensure e and phi(n) are co-prime
+    while gcd(e, phi) != 1:
+        e = random.randrange(1, phi)
+
+    d = multiplicative_inverse(e, phi)   # Private exponent
+    return ((e, n), (d, n))
+
+# Encrypt message using public key
+def encrypt(public_key, plaintext):
+    key, n = public_key
+    # Encrypt each character: c = (m^e) % n
+    cipher = [(ord(char) ** key) % n for char in plaintext]
+    return cipher
+
+# Decrypt message using private key
+def decrypt(private_key, ciphertext):
+    key, n = private_key
+    # Decrypt each number: m = (c^d) % n
+    plain = [chr((char ** key) % n) for char in ciphertext]
+
+    # Replace non-printable characters with '?'
+    decrypted_text = ''.join([char if 32 <= ord(char) <= 126 else '?' for char in plain])
+    return decrypted_text
+
+# ---- Main Execution ----
+p = int(input("Enter first Prime No. .: "))  # e.g., 61
+q = int(input("Enter Second Prime No.: "))   # e.g., 53
+public_key, private_key = generate_keypair(p, q)
+
+print("Public Key :", public_key)
+print("Private Key:", private_key)
+
+plaintext = input("Enter PlainText: ")
+ciphertext = encrypt(public_key, plaintext)
+decrypted_text = decrypt(private_key, ciphertext)
+
+print("\nPlaintext :", plaintext)
+print("Ciphertext:", ciphertext)
+print("Decrypted :", decrypted_text)
+
+
+
+
+#--------------------------output me p1=61  ,p2 = 53

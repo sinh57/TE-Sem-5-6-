@@ -1,0 +1,87 @@
+import java.util.Scanner;
+
+public class RoundRobin {
+    public static void main(String args[]) {
+        Scanner sn = new Scanner(System.in);
+        
+        System.out.print("Enter How Many Processes You Want: ");
+        int n = sn.nextInt();
+        
+        int process[] = new int[n];
+        int arrival[] = new int[n];  // Not used here, assuming all arrivals at time 0.
+        int burst[] = new int[n];
+        int completion[] = new int[n];
+        int WT[] = new int[n]; // Waiting Time
+        int TAT[] = new int[n]; // Turnaround Time
+        
+        int origBurst[] = new int[n]; // To keep track of the original burst times
+        int count, i, tq, temp, sum = 0;
+        float totalTAT = 0, totalWT = 0;
+        
+        // Input burst times for each process
+        for (i = 0; i < n; i++) {
+            System.out.print("Enter Process " + (i + 1) + " burst time: ");
+            burst[i] = sn.nextInt();
+            
+            process[i] = i + 1;  // Process ID
+            origBurst[i] = burst[i];  // Store original burst times
+        }
+        
+        // Input time quantum
+        System.out.print("Enter Time Quantum: ");
+        tq = sn.nextInt();
+        
+        // Round Robin logic
+        while (true) {
+            for (i = 0, count = 0; i < n; i++) {
+                temp = tq;
+                
+                // If burst time is zero, the process is already completed
+                if (burst[i] == 0) {
+                    count++;
+                    continue;
+                }
+                
+                // If burst time is greater than time quantum, reduce burst time
+                if (burst[i] > tq) {
+                    burst[i] = burst[i] - tq;
+                } 
+                // If burst time is smaller or equal to time quantum, complete the process
+                else if (burst[i] >= 0) {
+                    temp = burst[i];
+                    burst[i] = 0;
+                    count++;  // Process is complete
+                }
+                
+                // Increment sum of time for calculating completion time
+                sum = sum + temp;
+                completion[i] = sum;  // Completion time for each process
+            }
+            
+            // Break loop when all processes are completed
+            if (n == count) {
+                break;
+            }
+        }
+        
+        // Output the process information
+        System.out.println("\nProcess\tBurst Time\tCompletion\tTurnaround Time\tWaiting Time");
+        
+        // Calculate Turnaround Time (TAT) and Waiting Time (WT)
+        for (i = 0; i < n; i++) {
+            TAT[i] = completion[i] - arrival[i];  // Turnaround time = completion time - arrival time
+            totalTAT = totalTAT + TAT[i];
+            
+            WT[i] = TAT[i] - origBurst[i];  // Waiting time = turnaround time - burst time
+            totalWT = totalWT + WT[i];
+            
+            System.out.println((i + 1) + "\t" + origBurst[i] + "\t\t" + completion[i] + "\t\t" + TAT[i] + "\t\t" + WT[i]);
+        }
+        
+        // Output the average waiting time and average turnaround time
+        System.out.println("\nAverage Waiting Time = " + (totalWT / n));
+        System.out.println("Average Turnaround Time = " + (totalTAT / n));
+        
+        sn.close();
+    }
+}

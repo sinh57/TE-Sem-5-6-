@@ -1,0 +1,192 @@
+from collections import deque
+
+class Graph:
+    def __init__(self, adjacency_list):
+        self.adjacency_list = adjacency_list
+
+    def get_neighbors(self, v):
+        return self.adjacency_list[v]
+
+    def h(self, n):
+        H = {
+            'A': 3,
+            'B': 4,
+            'C': 2,
+            'D': 6,
+            'G': 0,
+            'S': 5
+        }
+        return H[n]
+
+    def a_star_algorithm(self, start_node, stop_node):
+        open_list = set([start_node])
+        closed_list = set([])
+        g = {}
+        g[start_node] = 0
+        parents = {}
+        parents[start_node] = start_node
+
+        while len(open_list) > 0:
+            n = None
+            for v in open_list:
+                if n is None or g[v] + self.h(v) < g[n] + self.h(n):
+                    n = v
+            if n is None:
+                print('path does not exist!')
+                return None
+            if n == stop_node:
+                reconst_path = []
+                while parents[n] != n:
+                    reconst_path.append(n)
+                    n = parents[n]
+                reconst_path.append(start_node)
+                reconst_path.reverse()
+                print('path found: {}'.format(reconst_path))
+                return reconst_path
+            for (m, weight) in self.get_neighbors(n):
+                if m not in open_list and m not in closed_list:
+                    open_list.add(m)
+                    parents[m] = n
+                    g[m] = g[n] + weight
+                else:
+                    if g[m] > g[n] + weight:
+                        g[m] = g[n] + weight
+                        parents[m] = n
+                if m in closed_list:
+                    closed_list.remove(m)
+                    open_list.add(m)
+            open_list.remove(n)
+            closed_list.add(n)
+
+        print('path does not exist!')
+        return None
+
+adjacency_list = {
+    'A': [('B', 2), ('C', 1)],
+    'B': [('D', 5)],
+    'C': [('D', 3), ('G', 4)],
+    'D': [('G', 2)],
+    'S': [('A', 1), ('G', 10)]
+}
+
+graph1 = Graph(adjacency_list)
+graph1.a_star_algorithm('S', 'G')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from copy import deepcopy
+import numpy as np
+import time
+
+def print_puzzle(puzzle):
+    """Print the puzzle in a 3x3 grid format"""
+    puzzle = np.array(puzzle).reshape(3, 3)
+    for row in puzzle:
+        print(' '.join(map(str, row)))
+
+def bestsolution(state):
+    bestsol = np.array([], int).reshape(-1, 9)
+    count = len(state) - 1
+    while count != -1:
+        bestsol = np.insert(bestsol, 0, state[count]['puzzle'], 0)
+        count = (state[count]['parent'])
+    return bestsol
+
+def misplaced_tiles(puzzle, goal):
+    mscost = np.sum(puzzle != goal) - 1
+    return mscost if mscost > 0 else 0
+
+def coordinates(puzzle):
+    pos = np.array(range(9))
+    for p, q in enumerate(puzzle):
+        pos[q] = p
+    return pos
+
+def get_blank_position(puzzle):
+    """Get the position of the blank (0) tile without triggering deprecation warning"""
+    blank_pos = np.where(puzzle == 0)
+    return blank_pos[0].item()  # safely extract single integer from array
+
+def evaluvate_misplaced(puzzle, goal):
+    # Define the dtype for structured array
+    dtype = [('move', 'U4'), ('position', 'O'), ('head', int)]
+    steps = np.array([
+        ('up', [0, 1, 2], -3),
+        ('down', [6, 7, 8], 3),
+        ('left', [0, 3, 6], -1),
+        ('right', [2, 5, 8], 1)
+    ], dtype=dtype)
+    
+    dtstate = [('puzzle', list), ('parent', int), ('gn', int), ('hn', int)]
+    costg = coordinates(goal)
+    parent = -1
+    gn = 0
+    hn = misplaced_tiles(coordinates(puzzle), costg)
+    state = np.array([(puzzle, parent, gn, hn)], dtstate)
+    dtpriority = [('position', int), ('fn', int)]
+    priority = np.array([(0, hn)], dtpriority)
+
+    while len(priority) > 0:
+        priority = np.sort(priority, kind='mergesort', order=['fn', 'position'])
+        position, fn = priority[0]
+        priority = np.delete(priority, 0, 0)
+        puzzle, parent, gn, hn = state[position]
+        puzzle = np.array(puzzle)
+        blank = get_blank_position(puzzle)  # Using the new function
+        gn = gn + 1
+        
+        for s in steps:
+            if blank not in s['position']:
+                openstates = deepcopy(puzzle)
+                openstates[blank], openstates[blank + s['head']] = openstates[blank + s['head']], openstates[blank]
+                if not (np.all(list(state['puzzle']) == openstates, 1)).any():
+                    hn = misplaced_tiles(coordinates(openstates), costg)
+                    q = np.array([(openstates.tolist(), position, gn, hn)], dtstate)
+                    state = np.append(state, q, 0)
+                    fn = gn + hn
+                    q = np.array([(len(state) - 1, fn)], dtpriority)
+                    priority = np.append(priority, q, 0)
+                if np.array_equal(openstates, goal):
+                    print('The 8 puzzle is solvable')
+                    return state, len(priority)
+        
+        if len(priority) == 0:
+            print('The 8 puzzle is not solvable')
+            return None, 0
+
+# Initial state
+puzzle = [2, 8, 3, 1, 6, 4, 7, 0, 5]
+# Goal state
+goal = [1, 2, 3, 8, 0, 4, 7, 6, 5]
+
+result = evaluvate_misplaced(puzzle, goal)
+if result[0] is not None:
+    state, visited = result
+    bestpath = bestsolution(state)
+    # Print each state in the solution path
+    for path in bestpath:
+        print_puzzle(path)
+        print()
+    totalmoves = len(bestpath) - 1
+    print('Steps to reach goal:', totalmoves)
+    print('Total nodes visited:', len(state) - visited)

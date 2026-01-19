@@ -1,0 +1,175 @@
+// LogLevelProcessor.java
+package LogLevelProcessor;
+
+import java.io.IOException;
+import java.util.Iterator;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.*;
+
+public class LogLevelProcessor {
+
+    // Mapper class to process the log file and extract log levels
+    public static class LogLevelMapper extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
+        private final static IntWritable one = new IntWritable(1);
+
+        public void map(LongWritable key, Text value, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
+            String valueString = value.toString();
+            String[] logData = valueString.split(","); // Adjust based on actual log file format
+            if (logData.length > 1) {
+                String logLevel = logData[1].trim(); // Assuming second field is log level
+                output.collect(new Text(logLevel), one);
+            }
+        }
+    }
+
+    // Reducer class to sum the occurrences of each log level
+    public static class LogLevelReducer extends MapReduceBase implements Reducer<Text, IntWritable, Text, IntWritable> {
+        public void reduce(Text t_key, Iterator<IntWritable> values, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
+            int frequencyForLogLevel = 0;
+            while (values.hasNext()) {
+                IntWritable value = values.next(); // Corrected type casting
+                frequencyForLogLevel += value.get();
+            }
+            output.collect(t_key, new IntWritable(frequencyForLogLevel));
+        }
+    }
+
+    // Driver class to set up and run the MapReduce job
+    public static class LogLevelDriver {
+
+        public static void main(String[] args) {
+            if (args.length != 2) { // Validate input arguments
+                System.err.println("Usage: LogLevelProcessor <input path> <output path>");
+                System.exit(-1);
+            }
+
+            JobClient my_client = new JobClient();
+            JobConf job_conf = new JobConf(LogLevelProcessor.class);
+
+            job_conf.setJobName("LogLevelCount");
+
+            // Specify data type of output key and value
+            job_conf.setOutputKeyClass(Text.class);
+            job_conf.setOutputValueClass(IntWritable.class);
+
+            // Specify names of Mapper and Reducer Class
+            job_conf.setMapperClass(LogLevelMapper.class);
+            job_conf.setReducerClass(LogLevelReducer.class);
+
+            // Specify formats of the data type of Input and output
+            job_conf.setInputFormat(TextInputFormat.class);
+            job_conf.setOutputFormat(TextOutputFormat.class);
+
+            // Set input and output directories using command line arguments
+            FileInputFormat.setInputPaths(job_conf, new Path(args[0]));
+            FileOutputFormat.setOutputPath(job_conf, new Path(args[1]));
+
+            my_client.setConf(job_conf);
+            try {
+                JobClient.runJob(job_conf);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+1) Create a input text file which has to be passed to the program, for that:
+	#Goto any location in your PC
+	#Create a folder(name Log)
+	#In that folder create a text file(inputLog.txt) and type input data in that file and save it.
+	#After all copy the PATH of that text file.
+
+
+
+****CREATING JARs****
+1) First Open any IDE I prefer Eclips
+
+
+2) Now Create a new Java Project from menu --> files --> new --> JavaProject name"ProcessLog"
+#Note: select JavaSE-1.8 in "Use an execution environment JRE"
+
+
+3) After this Create a Package name "com.mapreduce.lf" for this:
+	#Right click on project file --> new --> Package --> name Package --> Finish
+
+
+4) Adding External JAR files: 
+	#Right click on project --> Build Path --> Configure Build Path
+	#In Libraries --> Add External JARs
+	#Locate your Hadoop folder in your PC
+	#Now follow : hadoop --> share --> hadoop --> (Now there are multiple folders, you need to follow this sequence to add JARs)
+
+
+5) Sequence of Adding External JARs:
+	a)client --> all JARs	
+	b)common --> all JARs Only
+	c)common --> lib --> all JARs
+	d)yarn --> all JARs Only
+	e)mapreduce --> all JARs Only
+	f)hdfs --> all JARs Only
+	#After this Click on Apply and Close Btn
+
+
+6) Create Your Class by right clicking on your created Package --> new --> class then name(Process) (Write your code and save it)
+#Note: If any ERROR occurs then again Add the External JARs (hadfs -> lib, mapreduce -> lib, yarn -> lib)
+
+
+7) Creatin own JAR File:
+	#Right click on project --> Export...
+	#Java --> JAR file --> Next
+	#Chaneg the Path: Browse --> Choose any location --> Crate Forlder for your JAR Files --> Save --> Finish
+	#Give JAR file name as "Process"
+
+
+****HADOOP Init****
+8) open Terminal as administrator.
+
+
+9) Run services of Hadoop :
+	>start-all.cmd  #wait until all log cmds open and minimize those windows
+	#for verification type:
+	>jps
+
+10) Open Browser --> localhost:9870  #For HDFS
+
+
+11) In HDFS -> utilities -> Browse Directory
+
+
+12) New tab --> localhost:8088  #For Hadoop Background Application (Minimize don't close)
+
+
+13) Open main cmd and type:
+	>Hadoop fs -mkdir /folder_name(InputDir)  #To store input files which has need to be passed to the program
+	#For verification go to the HDFS tab in Browser and search for "/" and check if there is any folder name your folder_name(InputDir)
+
+
+14) Now you need to put the text file (created in step 1(inputLog.txt)) into your Current Directory created on HDFS using cmd:
+	>Hadoop fs -put Path(inputLog.txt) /Directory name(InputDir)
+	#For verification you repeat the same process of STEP-6
+	OR
+	>Hadoop fs -ls /Directory name(InputDir)
+
+
+15) Now Goto that JAR File's(Process) location and copy it's Path
+
+16) Open main cmd type:
+	>hadoop jar JAR_fil_path com.mapreduce.lf/Process/InputDir/inputLog.txt /OutputDir
+	#If no any ERROR occurs then your program was successfully Executed
+
+17) To check output in cmd type:
+	>hadoop dfs -cat /OutputDir/*
+	(Optional for saving output in your pc)
+	>Hadoop dfs -get /OutputDir/(directory path where you want to save the output file)/output_file.txt
+

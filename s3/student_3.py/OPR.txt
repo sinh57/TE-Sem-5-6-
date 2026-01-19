@@ -1,0 +1,51 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class LRU {
+    public static void main(String args[]) {
+        Scanner sn = new Scanner(System.in);
+
+        // Input the number of frames
+        System.out.print("Enter the number of FRAMES: ");
+        int frame = sn.nextInt();
+
+        // Input the number of pages (inputs)
+        System.out.print("Enter the number of INPUTS (pages): ");
+        int pg = sn.nextInt();
+
+        // Input the pages
+        System.out.print("Enter INPUT (page numbers): ");
+        int pages[] = new int[pg];
+        for (int i = 0; i < pg; i++) {
+            pages[i] = sn.nextInt();
+        }
+
+        // Create an ArrayList to simulate the LRU cache
+        ArrayList<Integer> s = new ArrayList<>(frame);
+
+        int pageFaults = 0;
+
+        // Process each page
+        for (int i : pages) {
+            // If the page is not in the frames (page fault)
+            if (!s.contains(i)) {
+                // If the frames are full, remove the least recently used page (first element in the list)
+                if (s.size() == frame) {
+                    s.remove(0);
+                }
+                s.add(i); // Add the new page to the frames (most recently used)
+                pageFaults++; // Increment page fault count
+            } else {
+                // If page is already in the frames, move it to the most recently used position
+                s.remove((Integer) i); // Remove the page from its current position
+                s.add(i); // Add it back at the end (most recently used)
+            }
+        }
+
+        // Output the total number of page faults
+        System.out.println("\nTotal Page Faults: " + pageFaults);
+
+        // Close the scanner
+        sn.close();
+    }
+}
